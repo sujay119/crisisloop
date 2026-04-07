@@ -1,0 +1,12 @@
+fastapi
+python-multipart
+uvicorn
+pydantic
+PyYAML
+python-dotenv
+huggingface_hub
+supabase
+numpy
+httpx
+tenacity
+pytest

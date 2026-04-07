@@ -1,0 +1,69 @@
+name: "CrisisLoop"
+description: "Customer Escalation Crisis Simulator"
+version: "1.0.0"
+tags: ["escalation", "customer-support", "crisis", "policy", "sla"]
+
+tasks:
+  - id: "task_1_easy_urgency"
+    name: "Urgency Classification"
+    description: "Correctly classify escalation urgency from customer message."
+    difficulty: "easy"
+  - id: "task_2_medium_policy"
+    name: "Policy-Compliant Response Handling"
+    description: "Respond correctly to a customer without violating company policy."
+    difficulty: "medium"
+  - id: "task_3_hard_multi_step"
+    name: "Multi-Step Escalation Resolution"
+    description: "Handle a multi-turn crisis and finish with the best possible outcome."
+    difficulty: "hard"
+
+action_schema:
+  type: "object"
+  properties:
+    action_type:
+      type: "string"
+      enum: ["classify", "respond", "escalate", "offer_resolution"]
+    urgency_class:
+      type: "string"
+      enum: ["low", "medium", "high", "critical"]
+      description: "Required when action_type is classify."
+    message:
+      type: "string"
+      description: "Response or offer sent to customer."
+  required: ["action_type"]
+
+observation_schema:
+  type: "object"
+  properties:
+    customer_message:
+      type: "string"
+    conversation_history:
+      type: "array"
+      items:
+        type: "string"
+    visible_sentiment_score:
+      type: "number"
+    sla_remaining:
+      type: "number"
+    internal_notes:
+      type: "string"
+    company_policy_summary:
+      type: "string"
+    channel_type:
+      type: "string"
+
+reward_schema:
+  type: "object"
+  properties:
+    score:
+      type: "number"
+    breakdown:
+      type: "object"
+
+endpoints:
+  reset: "/reset"
+  step: "/step"
+  state: "/state"
+  tasks: "/tasks"
+  grader: "/grader"
+  baseline: "/baseline"
