@@ -52,7 +52,7 @@ def grade_task_2(episode: EpisodeState, action: Action) -> GraderResult:
         compliance_score -= 0.5
         
     if action.concession_amount and action.concession_amount > episode.scenario.policy_pack.max_concession:
-        compliance_score -= 1.0
+        compliance_score -= 0.99
         
     if action.action_type == "escalate" and not episode.scenario.policy_pack.requires_manager_approval_for_escalation:
         correctness_score -= 0.5 # Unnecessary escalation penalty
