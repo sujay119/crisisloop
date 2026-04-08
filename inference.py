@@ -18,6 +18,10 @@ HF_TOKEN = os.getenv("HF_TOKEN")
 LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")
 BENCHMARK = "crisisloop"
 
+def clamp_score(score: float) -> float:
+    """Ensures score is strictly between 0 and 1, range [0.1, 0.99]"""
+    return round(max(0.1, min(0.99, float(score))), 4)
+
 def log_start(task: str, env: str, model: str) -> None:
     print(f"[START] task={task} env={env} model={model}", flush=True)
 
@@ -46,21 +50,25 @@ def run_task(task_id: str, client: dict) -> float:
         r = httpx.post(f"{ENV_API_BASE}/reset", json={"task_id": task_id, "scenario_id": ""}, timeout=10.0)
         if r.status_code != 200:
             print(f"[DEBUG] Failed to reset: {r.text}")
-            log_end(success=False, steps=0, score=0.0, rewards=[])
-            return 0.0
+            score_out = clamp_score(0.0)
+            log_end(success=False, steps=0, score=score_out, rewards=[])
+            return score_out
         
     except httpx.TimeoutException:
         print("[DEBUG] Timeout error: failed to reset environment")
-        log_end(success=False, steps=0, score=0.0, rewards=[])
-        return 0.0
+        score_out = clamp_score(0.0)
+        log_end(success=False, steps=0, score=score_out, rewards=[])
+        return score_out
     except httpx.NetworkError as e:
         print(f"[DEBUG] Network error: failed to reset environment - {e}")
-        log_end(success=False, steps=0, score=0.0, rewards=[])
-        return 0.0
+        score_out = clamp_score(0.0)
+        log_end(success=False, steps=0, score=score_out, rewards=[])
+        return score_out
     except Exception as e:
         print(f"[DEBUG] Unexpected error: failed to reset environment - {e}")
-        log_end(success=False, steps=0, score=0.0, rewards=[])
-        return 0.0
+        score_out = clamp_score(0.0)
+        log_end(success=False, steps=0, score=score_out, rewards=[])
+        return score_out
 
     data = r.json()
     episode_id = data["episode_id"]
@@ -160,6 +168,7 @@ Output ONLY JSON in the following exact schema:
     except Exception as e:
         print(f"[DEBUG] Unexpected error: failed to get grader result - {e}")
 
+    score = clamp_score(score)
     success = score >= 0.5
     log_end(success=success, steps=step_count, score=score, rewards=rewards)
 

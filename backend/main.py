@@ -5,7 +5,7 @@ from typing import Dict, Any, List, Optional
 from backend.models.schemas import ResetRequest, StepRequest, StepResponse, EpisodeState, GraderResult
 from backend.core.environment import CrisisEnvironment
 from backend.tasks.tasks import get_tasks
-from backend.tasks.graders import grade_task_1, grade_task_2, grade_task_3
+from backend.tasks.graders import grade_task_1, grade_task_2, grade_task_3, clamp_score
 from backend.data.scenarios import SCENARIOS
 from backend.routers import boost, crm, omnichannel
 
@@ -117,8 +117,6 @@ from typing import Optional
 
 @app.get("/grader")
 def run_grader(episode_id: Optional[str] = None, scenario_id: Optional[str] = None) -> GraderResult:
-    def _clamp(val: float) -> float:
-        return max(0.01, min(0.99, float(val)))
         
     try:
         if scenario_id:
@@ -128,11 +126,11 @@ def run_grader(episode_id: Optional[str] = None, scenario_id: Optional[str] = No
                     raise ValueError(f"Scenario {scenario_id} not found.")
                 difficulty = SCENARIOS[scenario_id].difficulty_level
                 if difficulty == "easy":
-                    return GraderResult(tone=0.9, correctness=0.99, policy_compliance=0.99, resolution=0.99, time_efficiency=0.99, consistency=0.99, final_score=0.99)
+                    return GraderResult(tone=clamp_score(0.9), correctness=clamp_score(0.99), policy_compliance=clamp_score(0.99), resolution=clamp_score(0.99), time_efficiency=clamp_score(0.99), consistency=clamp_score(0.99), final_score=clamp_score(0.99))
                 elif difficulty == "medium":
-                    return GraderResult(tone=0.8, correctness=0.85, policy_compliance=0.9, resolution=0.8, time_efficiency=0.8, consistency=0.9, final_score=0.85)
+                    return GraderResult(tone=clamp_score(0.8), correctness=clamp_score(0.85), policy_compliance=clamp_score(0.9), resolution=clamp_score(0.8), time_efficiency=clamp_score(0.8), consistency=clamp_score(0.9), final_score=clamp_score(0.85))
                 else:
-                    return GraderResult(tone=0.6, correctness=0.7, policy_compliance=0.6, resolution=0.5, time_efficiency=0.5, consistency=0.7, final_score=0.6)
+                    return GraderResult(tone=clamp_score(0.6), correctness=clamp_score(0.7), policy_compliance=clamp_score(0.6), resolution=clamp_score(0.5), time_efficiency=clamp_score(0.5), consistency=clamp_score(0.7), final_score=clamp_score(0.6))
             episode_id = eps[-1]
             
         if episode_id == "latest" or not episode_id:
@@ -152,7 +150,7 @@ def run_grader(episode_id: Optional[str] = None, scenario_id: Optional[str] = No
             # but we know true_urgency vs if it matched. Since step() logged it, 
             # let's just infer from current status for simplicity.
             score = 0.99 if state.current_status == "resolved" else 0.01
-            return GraderResult(tone=0.01, correctness=score, policy_compliance=0.01, resolution=0.01, time_efficiency=0.01, consistency=0.01, final_score=score)
+            return GraderResult(tone=clamp_score(0.01), correctness=clamp_score(score), policy_compliance=clamp_score(0.01), resolution=clamp_score(0.01), time_efficiency=clamp_score(0.01), consistency=clamp_score(0.01), final_score=clamp_score(score))
         
         elif difficulty == "medium":
             # For task 2 we grade based on sentiment, compliance, correctness derived from state
@@ -161,7 +159,7 @@ def run_grader(episode_id: Optional[str] = None, scenario_id: Optional[str] = No
             score = 0.99 if state.current_status == "resolved" else 0.01
             compliance = 0.99 - (state.policy_violation_count * 0.5)
             compliance = max(0.01, compliance)
-            return GraderResult(tone=_clamp(state.sentiment), correctness=score, policy_compliance=compliance, resolution=score, time_efficiency=0.01, consistency=0.01, final_score=_clamp((score+compliance)/2))
+            return GraderResult(tone=clamp_score(state.sentiment), correctness=clamp_score(score), policy_compliance=clamp_score(compliance), resolution=clamp_score(score), time_efficiency=clamp_score(0.01), consistency=clamp_score(0.01), final_score=clamp_score((score+compliance)/2))
         
         else:
             return grade_task_3(state)

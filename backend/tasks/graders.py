@@ -2,8 +2,9 @@ import re
 from typing import Dict, Any
 from backend.models.schemas import GraderResult, EpisodeState, Action
 
-def _clamp(val: float) -> float:
-    return max(0.01, min(0.99, float(val)))
+def clamp_score(score: float) -> float:
+    """Ensures score is strictly between 0 and 1, range [0.1, 0.99]"""
+    return round(max(0.1, min(0.99, float(score))), 4)
 
 def grade_task_1(episode: EpisodeState, action: Action) -> GraderResult:
     """
@@ -17,13 +18,13 @@ def grade_task_1(episode: EpisodeState, action: Action) -> GraderResult:
     score = 0.99 if true_urgency == submitted_urgency else 0.01
     
     return GraderResult(
-        tone=_clamp(0.01),
-        correctness=_clamp(score),
-        policy_compliance=_clamp(0.01),
-        resolution=_clamp(0.01),
-        time_efficiency=_clamp(0.01),
-        consistency=_clamp(0.01),
-        final_score=_clamp(score)
+        tone=clamp_score(0.01),
+        correctness=clamp_score(score),
+        policy_compliance=clamp_score(0.01),
+        resolution=clamp_score(0.01),
+        time_efficiency=clamp_score(0.01),
+        consistency=clamp_score(0.01),
+        final_score=clamp_score(score)
     )
 
 def _contains_forbidden_commitments(message: str) -> bool:
@@ -64,13 +65,13 @@ def grade_task_2(episode: EpisodeState, action: Action) -> GraderResult:
     final_score = (tone_score * 0.3) + (correctness_score * 0.3) + (compliance_score * 0.4)
     
     return GraderResult(
-        tone=_clamp(tone_score),
-        correctness=_clamp(correctness_score),
-        policy_compliance=_clamp(compliance_score),
-        resolution=_clamp(0.01),
-        time_efficiency=_clamp(0.01),
-        consistency=_clamp(0.01),
-        final_score=_clamp(final_score)
+        tone=clamp_score(tone_score),
+        correctness=clamp_score(correctness_score),
+        policy_compliance=clamp_score(compliance_score),
+        resolution=clamp_score(0.01),
+        time_efficiency=clamp_score(0.01),
+        consistency=clamp_score(0.01),
+        final_score=clamp_score(final_score)
     )
 
 def grade_task_3(episode: EpisodeState) -> GraderResult:
@@ -107,11 +108,11 @@ def grade_task_3(episode: EpisodeState) -> GraderResult:
     final_score = (resolution_score * 0.4) + (time_efficiency * 0.2) + (compliance_score * 0.3) + (consistency_score * 0.1)
     
     return GraderResult(
-        tone=_clamp(tone_score),
-        correctness=_clamp(resolution_score),
-        policy_compliance=_clamp(compliance_score),
-        resolution=_clamp(resolution_score),
-        time_efficiency=_clamp(time_efficiency),
-        consistency=_clamp(consistency_score),
-        final_score=_clamp(final_score)
+        tone=clamp_score(tone_score),
+        correctness=clamp_score(resolution_score),
+        policy_compliance=clamp_score(compliance_score),
+        resolution=clamp_score(resolution_score),
+        time_efficiency=clamp_score(time_efficiency),
+        consistency=clamp_score(consistency_score),
+        final_score=clamp_score(final_score)
     )

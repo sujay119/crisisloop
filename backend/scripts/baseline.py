@@ -9,6 +9,10 @@ load_dotenv()
 # We run this standalone but interact with our FastAPI via HTTP
 API_BASE = "http://127.0.0.1:8000"
 
+def clamp_score(score: float) -> float:
+    """Ensures score is strictly between 0 and 1, range [0.1, 0.99]"""
+    return round(max(0.1, min(0.99, float(score))), 4)
+
 def get_hf_client():
     hf_token = os.getenv("HF_TOKEN", "")
     if not hf_token:
@@ -22,7 +26,7 @@ def run_task(task_id: str, client: InferenceClient) -> float:
     r = httpx.post(f"{API_BASE}/reset", json={"task_id": task_id})
     if r.status_code != 200:
         print(f"Failed to reset: {r.text}")
-        return 0.0
+        return clamp_score(0.0)
         
     data = r.json()
     episode_id = data["episode_id"]
@@ -77,11 +81,12 @@ Output ONLY JSON in the following exact schema:
     r = httpx.get(f"{API_BASE}/grader", params={"episode_id": episode_id})
     if r.status_code == 200:
         score = r.json()["final_score"]
+        score = clamp_score(score)
         print(f"Final Score: {score}")
         return score
     else:
         print("Failed to run grader")
-        return 0.0
+        return clamp_score(0.0)
 
 if __name__ == "__main__":
     client = get_hf_client()
