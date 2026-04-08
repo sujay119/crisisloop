@@ -1,0 +1,79 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "crisisloop"
+version = "1.0.0"
+description = "AI Omnichannel CRM Simulator - Customer Escalation Crisis Training Environment"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "sujay119", email = "sujay@example.com"}
+]
+keywords = ["ai", "crm", "customer-service", "simulation", "training", "escalation"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Office/Business :: Customer Relationship Management (CRM)",
+]
+
+dependencies = [
+    "fastapi",
+    "python-multipart",
+    "uvicorn",
+    "pydantic",
+    "PyYAML",
+    "python-dotenv",
+    "huggingface_hub",
+    "supabase",
+    "numpy",
+    "httpx",
+    "tenacity",
+    "openenv-core>=0.2.0",
+    "openai",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "black",
+    "flake8",
+    "mypy",
+]
+
+[project.urls]
+Homepage = "https://github.com/sujay119/crisisloop"
+Repository = "https://github.com/sujay119/crisisloop"
+Issues = "https://github.com/sujay119/crisisloop/issues"
+
+[project.scripts]
+crisisloop = "backend.main:app"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["backend*"]
+
+[tool.black]
+line-length = 88
+target-version = ['py310']
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]

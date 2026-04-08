@@ -2,6 +2,9 @@ import re
 from typing import Dict, Any
 from backend.models.schemas import GraderResult, EpisodeState, Action
 
+def _clamp(val: float) -> float:
+    return max(0.01, min(0.99, float(val)))
+
 def grade_task_1(episode: EpisodeState, action: Action) -> GraderResult:
     """
     Task 1 — Easy: Urgency Classification
@@ -14,13 +17,13 @@ def grade_task_1(episode: EpisodeState, action: Action) -> GraderResult:
     score = 0.99 if true_urgency == submitted_urgency else 0.01
     
     return GraderResult(
-        tone=0.01,
-        correctness=score,
-        policy_compliance=0.01,
-        resolution=0.01,
-        time_efficiency=0.01,
-        consistency=0.01,
-        final_score=max(0.01, min(0.99, score))
+        tone=_clamp(0.01),
+        correctness=_clamp(score),
+        policy_compliance=_clamp(0.01),
+        resolution=_clamp(0.01),
+        time_efficiency=_clamp(0.01),
+        consistency=_clamp(0.01),
+        final_score=_clamp(score)
     )
 
 def _contains_forbidden_commitments(message: str) -> bool:
@@ -61,13 +64,13 @@ def grade_task_2(episode: EpisodeState, action: Action) -> GraderResult:
     final_score = (tone_score * 0.3) + (correctness_score * 0.3) + (compliance_score * 0.4)
     
     return GraderResult(
-        tone=tone_score,
-        correctness=correctness_score,
-        policy_compliance=compliance_score,
-        resolution=0.01,
-        time_efficiency=0.01,
-        consistency=0.01,
-        final_score=max(0.01, min(0.99, final_score))
+        tone=_clamp(tone_score),
+        correctness=_clamp(correctness_score),
+        policy_compliance=_clamp(compliance_score),
+        resolution=_clamp(0.01),
+        time_efficiency=_clamp(0.01),
+        consistency=_clamp(0.01),
+        final_score=_clamp(final_score)
     )
 
 def grade_task_3(episode: EpisodeState) -> GraderResult:
@@ -104,11 +107,11 @@ def grade_task_3(episode: EpisodeState) -> GraderResult:
     final_score = (resolution_score * 0.4) + (time_efficiency * 0.2) + (compliance_score * 0.3) + (consistency_score * 0.1)
     
     return GraderResult(
-        tone=tone_score,
-        correctness=resolution_score,
-        policy_compliance=compliance_score,
-        resolution=resolution_score,
-        time_efficiency=time_efficiency,
-        consistency=consistency_score,
-        final_score=max(0.01, min(0.99, final_score))
+        tone=_clamp(tone_score),
+        correctness=_clamp(resolution_score),
+        policy_compliance=_clamp(compliance_score),
+        resolution=_clamp(resolution_score),
+        time_efficiency=_clamp(time_efficiency),
+        consistency=_clamp(consistency_score),
+        final_score=_clamp(final_score)
     )

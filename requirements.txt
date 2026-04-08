@@ -1,0 +1,14 @@
+fastapi
+python-multipart
+uvicorn
+pydantic
+PyYAML
+python-dotenv
+huggingface_hub
+supabase
+numpy
+httpx
+tenacity
+pytest
+openai
+openenv-core>=0.2.0
