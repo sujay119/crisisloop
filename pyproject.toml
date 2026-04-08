@@ -57,6 +57,7 @@ Issues = "https://github.com/sujay119/crisisloop/issues"
 
 [project.scripts]
 crisisloop = "backend.main:app"
+server = "backend.main:main"
 
 [tool.setuptools.packages.find]
 where = ["."]

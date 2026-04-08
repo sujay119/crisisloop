@@ -200,3 +200,9 @@ async def custom_404_handler(request, exc):
 if os.path.isdir("frontend/out"):
     app.mount("/", StaticFiles(directory="frontend/out", html=True), name="static")
 
+def main():
+    import uvicorn
+    uvicorn.run("backend.main:app", host="0.0.0.0", port=8000)
+
+if __name__ == "__main__":
+    main()
